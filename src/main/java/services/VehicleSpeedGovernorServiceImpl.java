@@ -9,26 +9,24 @@ import src.main.java.modules.speed_sensor.SpeedSensor;
  */
 public class VehicleSpeedGovernorServiceImpl implements VehicleSpeedGovernorService {
 
-    private int speedLimit;
-    private final SpeedSensor speedSensor;
-    private final ThrottleServiceImpl throttleService; // use new throttle
-    private final LoggerServiceImpl logger;
-
-    public VehicleSpeedGovernorServiceImpl(int speedLimit) {
-        this.speedLimit = speedLimit;
-        this.speedSensor = new SpeedSensor();
-        this.throttleService = new ThrottleServiceImpl();
-        this.logger = new LoggerServiceImpl();
-    }
+    private final SpeedSensor speedSensor = new SpeedSensor();
+    private final ThrottleService throttleService = new ThrottleServiceImpl();
+    private final LoggerService logger = new LoggerServiceImpl();
 
     @Override
     public void start() {
-        System.out.println("Vehicle Speed Governor started. Limit = " + speedLimit + " km/h");
+        logger.logEvent("Vehicle Speed Governor started. Limit = " + 100 + " km/h");
     }
 
     @Override
-    public void checkSpeed(int currentSpeed) {
-        speedSensor.setSpeed(currentSpeed);
+    public void deactivate(){
+        logger.logEvent("Vehicle Speed Governor deactivated. Speed = " + 0 + " km/h");
+    }
+
+
+    @Override
+    public void checkSpeed(int speedLimit) {
+        int currentSpeed = speedSensor.getSpeed();
 
         if (currentSpeed > speedLimit) {
             throttleService.limitThrottle();
@@ -36,22 +34,18 @@ public class VehicleSpeedGovernorServiceImpl implements VehicleSpeedGovernorServ
             alertDriver();
         } else {
             throttleService.releaseThrottle();
-            System.out.println("Speed OK: " + currentSpeed + " km/h");
+            logger.logEvent("Speed OK: " + currentSpeed + " km/h");
         }
     }
 
+
     @Override
-    public void updateSpeedLimit(int newLimit) {
-        this.speedLimit = newLimit;
+    public void updateSpeedLimit(SpeedSensor sensor, int newLimit) {
+        sensor.setSpeed(newLimit);
         logger.logEvent("New speed limit configured: " + newLimit + " km/h");
     }
 
     private void alertDriver() {
-        System.out.println("⚠️ Warning: Speed limit reached.");
-    }
-
-    // Expose throttle for testing
-    public ThrottleServiceImpl getThrottleService() {
-        return throttleService;
+        logger.logEvent("⚠️ Warning: Speed limit reached.");
     }
 }
