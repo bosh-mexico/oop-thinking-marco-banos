@@ -22,17 +22,33 @@ class VSGTest {
 
     @Test
     void testCheckSpeedBelowLimit() {
-        assertDoesNotThrow(() -> governor.checkSpeed(60));
+        governor.checkSpeed(60);
+        assertFalse(governor.getThrottleService().isThrottleLimited());
+        assertEquals(100, governor.getThrottleService().getThrottleLevel());
     }
 
     @Test
     void testCheckSpeedAboveLimit() {
-        assertDoesNotThrow(() -> governor.checkSpeed(100));
+        governor.checkSpeed(100);
+        assertTrue(governor.getThrottleService().isThrottleLimited());
+        assertTrue(governor.getThrottleService().getThrottleLevel() <= 60);
     }
 
     @Test
     void testUpdateSpeedLimit() {
         governor.updateSpeedLimit(90);
-        assertDoesNotThrow(() -> governor.checkSpeed(85));
+        governor.checkSpeed(85);
+        assertFalse(governor.getThrottleService().isThrottleLimited());
+        assertEquals(100, governor.getThrottleService().getThrottleLevel());
+    }
+
+    @Test
+    void testThrottleReleaseAfterLimit() {
+        governor.checkSpeed(100); // over limit → throttle limited
+        assertTrue(governor.getThrottleService().isThrottleLimited());
+
+        governor.checkSpeed(70); // below limit → throttle released
+        assertFalse(governor.getThrottleService().isThrottleLimited());
+        assertEquals(100, governor.getThrottleService().getThrottleLevel());
     }
 }

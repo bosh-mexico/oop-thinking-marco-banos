@@ -9,10 +9,10 @@ import src.main.java.modules.speed_sensor.SpeedSensor;
  */
 public class VehicleSpeedGovernorServiceImpl implements VehicleSpeedGovernorService {
 
-    private int speedLimit; // Maximum allowed speed
+    private int speedLimit;
     private final SpeedSensor speedSensor;
-    private final ThrottleService throttleService;
-    private final LoggerService logger;
+    private final ThrottleServiceImpl throttleService; // use new throttle
+    private final LoggerServiceImpl logger;
 
     public VehicleSpeedGovernorServiceImpl(int speedLimit) {
         this.speedLimit = speedLimit;
@@ -46,11 +46,12 @@ public class VehicleSpeedGovernorServiceImpl implements VehicleSpeedGovernorServ
         logger.logEvent("New speed limit configured: " + newLimit + " km/h");
     }
 
-    /**
-     * Alerts the driver when the governed speed is reached.
-     * Could be implemented with dashboard indicator, sound, etc.
-     */
     private void alertDriver() {
         System.out.println("⚠️ Warning: Speed limit reached.");
+    }
+
+    // Expose throttle for testing
+    public ThrottleServiceImpl getThrottleService() {
+        return throttleService;
     }
 }
