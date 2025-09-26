@@ -1,4 +1,4 @@
-package src.main.java.modules;
+package src.main.java.modules.speed_sensor;
 
 public class SpeedSensor {
     private int currentSpeed;

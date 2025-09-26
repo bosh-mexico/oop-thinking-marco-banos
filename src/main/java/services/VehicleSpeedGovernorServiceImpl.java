@@ -1,7 +1,7 @@
 package src.main.java.services;
 
 
-import src.main.java.modules.SpeedSensor;
+import src.main.java.modules.speed_sensor.SpeedSensor;
 
 /**
  * Implementation of the VehicleSpeedGovernorService.
